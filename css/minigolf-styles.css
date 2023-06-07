@@ -1,0 +1,136 @@
+/* A: Gaige Johnston, 000869398, 31/03/22 */
+/* This is the style sheet for minigolf svg game */
+
+/* body and header */
+body {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+header {
+    background-color: rgb(1, 65, 160);
+    color: white;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20%;
+    align-items: center;
+}
+h1 {
+    grid-column: 1;
+    grid-row: 1;
+    height: 25px;
+}
+header p {
+    grid-column: 2;
+    grid-row: 1;
+}
+header a {
+    text-decoration: none;
+    color: white;
+}
+
+
+/* main page content - svg's and rules layout */
+#main {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    justify-content: space-evenly;
+    margin: auto 5%;
+}
+#rules {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+}
+#rules li {
+    text-align: left;
+    margin-bottom: 5px;
+}
+section {
+    margin-bottom: 10px;
+}
+#golfLogo {
+    grid-column: 2;
+    grid-row: 1;
+}
+#logoBackground {
+    stroke-dasharray: 530;
+    animation: waveFlag 8s infinite;
+}
+@keyframes waveFlag {
+    0% {stroke-dashoffset: 0;}
+    50% {stroke-dashoffset: 530;}
+    100% {stroke-dashoffset: 1060;}
+}
+
+
+/* logo svg styles in order of appearance in HTML */
+#gameSpace {
+    grid-column: 2;
+    grid-row: 2;
+}
+#logoBackground {
+    fill: lightgreen;
+    stroke: darkgreen;
+    stroke-width: 3px;
+}
+#logo {
+    fill: none;
+    stroke: darkgreen;
+}
+#logoText {
+    fill: black;
+}
+#flagpole {
+    stroke: black;
+    stroke-width: 2px;
+}
+#flag {
+    fill: red;
+    stroke: red;
+    stroke-width: 2px;
+}
+
+
+/* game svg styles in order of appearance */
+#background {
+    fill: rgb(60,110,40);
+}
+#playSpace {
+    fill:rgb(132, 219, 1);
+    stroke:brown;
+    stroke-width:4px;
+}
+.barrier {
+    stroke:brown;
+    stroke-width:4px;
+}
+#ball {
+    fill: white;
+    stroke:black;
+    stroke-width:1;
+}
+#hole {
+    fill: black;
+}
+#powerMeterLabel {
+    fill: white;
+}
+#powerBarContainer {
+    fill:none;
+    stroke:white;
+    stroke-width:3;
+}
+#powerBar {
+    fill: red;
+}
+#aim {
+    stroke:blue;
+    stroke-width:2;
+}
+#shotCount {
+    fill: white;
+}
+#coursePar {
+    fill: white;
+}

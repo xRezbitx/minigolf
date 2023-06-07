@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <!-- A: Gaige Johnston 000869398 21/03/22 -->
+        <!-- A5: SVG based Mini Golf game -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mini Golf</title>
+        <style>
+            body {
+                text-align: center;
+                margin: 0;
+                padding: 0;
+            }
+            header {
+                background-color: rgb(1, 65, 160);
+                color: white;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20%;
+                align-items: center;
+            }
+            h1 {
+                grid-column: 1;
+                grid-row: 1;
+                height: 25px;
+            }
+            header p {
+                grid-column: 2;
+                grid-row: 1;
+            }
+            header a {
+                text-decoration: none;
+                color: white;
+            }
+            #main {
+                display: grid;
+                grid-template-columns: 1fr 5fr;
+                justify-content: space-evenly;
+                margin: auto 5%;
+            }
+            #rules {
+                grid-column: 1;
+                grid-row: 1 / span 2;
+            }
+            #rules li {
+                text-align: left;
+                margin-bottom: 5px;
+            }
+            #golfLogo {
+                grid-column: 2;
+                grid-row: 1;
+            }
+            
+            #logoBackground {
+                stroke-dasharray: 530;
+                animation: waveFlag 8s infinite;
+            }
+            @keyframes waveFlag {
+                0% {stroke-dashoffset: 0;}
+                50% {stroke-dashoffset: 530;}
+                100% {stroke-dashoffset: 1060;}
+            }
+            #gameSpace {
+                grid-column: 2;
+                grid-row: 2;
+            }
+            #howToPlay {
+                max-width: 300px;
+            }
+            #howToPlay ol {
+                text-align: left;
+            }
+            #howToPlay li {
+                padding-bottom: 10px;
+            }
+            section {
+                margin-bottom: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>SVG Minigolf by Gaige</h1>
+            <p><a href="https://csunix.mohawkcollege.ca/~sa000869398/private/">Main Index</a></p>
+        </header>
+
+        <div id="main">
+            <div id="rules">
+                <h2>How To Play</h2>
+                <ol>
+                    <li>Aim with your mouse and then click on where you want the ball to move towards</li>
+                    <li>The power bar will shift between charging up and down. Press the SPACE key on your keyboard to choose the power level</li>
+                    <li>The ball will launch in the direction you chose</li>
+                    <li>Try to get the ball in the hole in the least amount of shots you can!</li>
+                </ol>
+            </div>
+
+            <article>
+                <section id="golfLogo">
+                    <svg width="250" height="140">
+                        <!-- logo oval -->
+                        <!-- path creation aided by https://yqnn.github.io/svg-path-editor/ -->
+                        <path id="logoBackground" fill="lightgreen" stroke="darkgreen" stroke-width="3" d="M 15 81 A 1 0.5 0 0 0 231 80 A 1 0.5 0 0 0 15 81" />
+                        <path id="logo" fill="none" stroke="darkgreen" d="M78 110 Q110 120 180 110 " />
+                        <text id="logoText" fill="black" style="font-size:24;font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
+                            <textpath href="#logo">
+                                MiniGolf!
+                            </textpath>
+                        </text>
+                        <!-- logo flag -->
+                        <line id="flagpole" x1="120" y1="90" x2="120" y2="45" style="stroke:black;stroke-width:2;" />
+                        <path id="flag" fill="red" stroke="red" stroke-width="2" d="M122 45 L142 52 L122 60 Z" />
+                    </svg>
+                </section>
+
+                <section id="gameSpace" >
+                    <svg width="900" height="620" id="game" onclick="mouseCoordinates(event)">
+                        <!-- green background -->
+                        <rect id="background" x="0" y="0" width="900" height="620" fill="rgb(60,110,40)" />
+                        <!-- valid green space and walls -->
+                        <polygon id="playSpace" points="50,50 850,50 850,550 50,550 50,400 700,400 700,200 50,200" style="fill:rgb(132, 219, 1);stroke:brown;stroke-width:4;" />
+                        <line class="barrier" x1="450" y1="85" x2="450" y2="165" style="stroke:brown;stroke-width:4;" />
+                        <line class="barrier" x1="550" y1="550" x2="550" y2="435" style="stroke:brown;stroke-width:4;" />
+                        <line class="barrier" x1="400" y1="515" x2="400" y2="400" style="stroke:brown;stroke-width:4;" />
+                        <!-- ball and hole -->
+                        <circle id="ball" cx="80" cy="125" r="7" fill="white" style="stroke:black;stroke-width:1;" />
+                        <circle id="hole" cx="125" cy="478" r="10" fill="black" />
+                        <!-- power meter -->
+                        <text id="powerMeterLabel" x="355" y="600" fill="white" style="font-size:30;font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;" >Power</text>
+                        <polygon id="powerBarContainer" points="450,585 450,600, 550,600 550,585" style="fill:none;stroke:white;stroke-width:3;" />
+                        <rect id="powerBar" x="452" y="587" width="0" height="11" fill="red" />
+                        <!-- aiming line -->
+                        <line id="aim" x1="80" y1="125" x2="130" y2="125" style="stroke:blue;stroke-width:2;" />
+                        <!-- par and shot count -->
+                        <text id="shotCount" x="300" y="250" fill="white" style="font-size:26;font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Shots: 0</text>
+                        <text id="coursePar" x="450" y="250" fill="white" style="font-size:26;font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Par: 6</text>
+                    </svg>
+                </section>
+
+                <section>
+                    <button id="replayButton" onclick="replay()">Replay</button>
+                </section>
+            
+            </article>
+        </div>
+        
+
+        <footer>
+            <p>&copy; 2022 &bull; Gaige Johnston &bull; Mohawk College</p>
+        </footer>
+
+        <script type="text/javascript">
+            
+            let golfball = document.getElementById("ball");
+            let theCourse = document.getElementById("game");
+            let layout = theCourse.getBoundingClientRect();
+
+            
+            var mouseX;
+            var mouseY;
+            var makeShot = false;
+            var readyToShoot = false;
+            var shotPower;
+
+            let directionX = 0;
+            let directionY = 0;
+            // sets shot angle and starts power meter
+            function mouseCoordinates(event) {
+                //clearInterval(drawAimer);
+                mouseX = event.clientX - layout.left;
+                mouseY = event.clientY - layout.top;
+                readyToShoot = true;
+
+                let width = 0;
+                let countUp = true;
+                shotStrength = setInterval(function() {
+                    if (countUp) {
+                        width++;
+                        if (width == 95) {
+                            countUp = false;
+                        }
+                    }
+                    else {
+                        width--;
+                        if (width == 0) {
+                            countUp = true;
+                        }
+                    }
+                    powerIndicator.setAttribute("width", width);
+
+                    document.addEventListener("keydown", function(event) {
+                        if (event.keyCode == 32) {
+                            shotPower = width;
+                            clearInterval(shotStrength);
+
+                            directionX = mouseX - parseInt(golfball.getAttribute("cx"));
+                            directionY = mouseY - parseInt(golfball.getAttribute("cy"));
+                            
+                            aiming.setAttribute("x2", golfball.getAttribute("cx"));
+                            aiming.setAttribute("y2", golfball.getAttribute("cy"));
+                            
+                            // aim based on distance being 35 and finding ratio between x and y
+                            // so that mouse distance from ball doesn't affect speed
+                            let ratio = 35;
+                            if (Math.abs(directionX) > Math.abs(directionY)) {
+                                let temp = directionX / ratio;
+                                if (directionX > 0) {
+                                    directionX = ratio;
+                                    directionY = directionY/temp;
+                                } else {
+                                    directionX = ratio * -1;
+                                    directionY = directionY/temp * -1;
+                                }
+                            } else {
+                                let temp = directionY / ratio;
+                                if (directionY > 0) {
+                                    directionY = ratio;
+                                    directionX = directionX/temp;
+                                } else {
+                                    directionY = ratio * -1;
+                                    directionX = directionX / temp * -1;
+                                }
+                                
+                            }
+                            return;
+                        }
+                    })
+                    
+                }, 10);
+                return;
+                
+            }
+            var powerIndicator = document.getElementById("powerBar");
+            
+            var numberOfShots = 0;
+            let shotCountText = document.getElementById("shotCount");
+
+            // moves the ball after releasing spacebar
+            document.addEventListener("keyup", function(event) {
+                if (event.keyCode == 32) {
+                    if (readyToShoot) {
+                        numberOfShots++;
+                        shotCount.textContent = ("Shots: " + numberOfShots);
+                        let counter = 0;
+                        let flipX = false;
+                        let flipY = false;
+                        var moveBall = setInterval(function() {
+                        
+                            let ballX = parseInt(golfball.getAttribute("cx"));
+                            let ballY = parseInt(golfball.getAttribute("cy"));
+
+                            if (counter >= shotPower/1.5) {
+                                // slows the ball down near the end of movement
+                                golfball.setAttribute("cx", ballX + directionX/9);
+                                golfball.setAttribute("cy", ballY + directionY/9);
+                                // slow enough to fall in hole when going over
+                                if (ballX >= 111 && ballX <= 137) {
+                                    if (ballY >= 463 && ballY <= 489) {
+                                        golfball.setAttribute("cx", 125);
+                                        golfball.setAttribute("cy", 478);
+                                        clearInterval(moveBall);
+                                        clearInterval(shotStrength);
+                                        powerIndicator.setAttribute("width", 0);
+                                        ballInHole();
+                                        return;
+                                    }
+                                }
+                            } else {
+                                // normal movement
+                                golfball.setAttribute("cx", ballX + directionX/4.5);
+                                golfball.setAttribute("cy", ballY + directionY/4.5);
+                            }
+                            
+
+
+                            // bouncing off the walls
+
+                            // horizontal boundaries
+                            if (!flipX) {
+                                // right most wall
+                                if (ballX >= 845) {
+                                    directionX = directionX * -1;
+                                    flipX = true;
+                                }
+                                // 2 far left walls
+                                if ((ballY >= 55 && ballY <= 195) || (ballY >= 405 && ballY <= 545)) {
+                                    if (ballX <=55) {
+                                        directionX = directionX * -1;
+                                        flipX = true;
+                                    }
+                                }
+                            }
+                            if (!flipX) {
+                                // middle vertical wall
+                                if (ballX <= 705 && ballX >= 695) {
+                                    if (ballY >= 195 && ballY <= 405) {
+                                        directionX = directionX * -1;
+                                        flipX = true;
+                                    }
+                                }
+                            }
+
+                            // top barrier in valid area
+                            if (!flipX) {
+                                if(ballX >= 448 && ballX <= 452) {
+                                    if (ballY >= 85 && ballY <= 165) {
+                                        directionX = directionX * -1;
+                                        flipX = true;
+                                    }
+                                }
+                            }
+
+                            // bottom barriers in valid space
+                            if (!flipX) {
+                                if(ballX >= 395 && ballX <= 405) {
+                                    if (ballY >= 400 && ballY <= 515) {
+                                        directionX = directionX * -1;
+                                        flipX = true;
+                                    }
+                                }
+                            }
+
+                            if (!flipX) {
+                                if(ballX >= 545 && ballX <= 555) {
+                                    if (ballY >= 435 && ballY <= 550) {
+                                        directionX = directionX * -1;
+                                        flipX = true;
+                                    }
+                                }
+                            }
+
+
+                            // back in valid space between two vertical walls on the right
+                            if (ballY >= 195 && ballY <= 405) {
+                                if (ballX > 705 && ballX < 845) {
+                                    flipX = false;
+                                }
+                            }
+
+                            // vertical boundaries
+                            if (!flipY) {
+                                // top and bottom walls
+                                if (ballY <= 55 || ballY >= 545) {
+                                    flipY = true;
+                                    directionY = directionY * -1;
+                                }
+                            }
+                            if (!flipY) {
+                                // middle horizontal walls
+                                if (ballX >= 55 && ballX <= 695) {
+                                    // top middle wall
+                                    if (ballY >= 195 && ballY <= 205) {
+                                        flipY = true;
+                                        directionY = directionY * -1;
+                                    }
+                                    // bottom middle wall
+                                    if (ballY >= 395 && ballY <= 405) {
+                                        flipY = true;
+                                        directionY = directionY * -1;
+                                    }
+                                }
+                            }
+                            // back in valid space vertically
+                            if ((ballY > 55 && ballY < 195) || (ballY < 545 && ballY > 405)) {
+                                flipY = false;
+                            }
+
+                            
+
+                            // end of wall bouncing
+
+
+                            // ball is done moving
+                            counter++;
+                            if (counter >= shotPower) {
+                                clearInterval(moveBall);
+                                clearInterval(shotStrength);
+                                aiming.setAttribute("x1", golfball.getAttribute("cx"));
+                                aiming.setAttribute("x2", golfball.getAttribute("cx"));
+                                aiming.setAttribute("y1", golfball.getAttribute("cy"));
+                                aiming.setAttribute("y2", golfball.getAttribute("cy"));
+                                powerIndicator.setAttribute("width", 0);
+
+                                // check if ball ended too close to outside of valid space and move it back in
+                                if (ballY <= 55) {
+                                    golfball.setAttribute("cy", 60);
+                                    aiming.setAttribute("y1", 60);
+                                }
+                                if (ballY >= 695) {
+                                    golfball.setAttribute("cy", 690);
+                                    aiming.setAttribute("y1", 690);
+                                }
+                                if (ballX >= 845) {
+                                    golfball.setAttribute("cx", 840);
+                                    aiming.setAttribute("x1", 840);
+                                }
+                                if (ballX <= 55) {
+                                    golfball.setAttribute("cx", 60);
+                                    aiming.setAttribute("x1", 60);
+                                }
+                                if (ballX >= 55 && ballX <= 695) {
+                                    // top middle wall
+                                    if (ballY >= 195 && ballY <= 205) {
+                                        golfball.setAttribute("cy", 190);
+                                        aiming.setAttribute("y1", 190);
+                                    }
+                                    // bottom middle wall
+                                    if (ballY >= 395 && ballY <= 405) {
+                                        golfball.setAttribute("cy", 410);
+                                        aiming.setAttribute("y1", 410);
+                                    }
+                                }
+                                if (ballX <= 705 && ballX >= 685) {
+                                    if (ballY >= 195 && ballY <= 405) {
+                                        golfball.setAttribute("cx", 710);
+                                        aiming.setAttribute("x1", 710);
+                                    }
+                                }
+
+                                // check if ball in the hole
+                                if (ballX >= 111 && ballX <= 137) {
+                                    if (ballY >= 463 && ballY <= 489) {
+                                        golfball.setAttribute("cx", 125);
+                                        golfball.setAttribute("cy", 478);
+                                        ballInHole();
+                                        return;
+                                    }
+                                }
+                                readyToShoot = false;
+                                return;
+                            }
+                        }, 20)
+                    }
+                }
+            })
+
+            const svgNS = "http://www.w3.org/2000/svg";
+            var score = document.createElementNS(svgNS, "text" );
+            function endScore() {
+                score.setAttribute("id", "endScore");
+                score.setAttribute("x", "325");
+                score.setAttribute("y", "300");
+                score.setAttribute("fill", "white");
+                score.setAttribute("style", "font-size:28;");
+                if (numberOfShots < 6) {
+                    score.textContent = ("Great! You got " + (numberOfShots - 6));
+                } else if (numberOfShots == 6) {
+                    score.textContent = ("Nice, you got Par");
+                } else {
+                    score.textContent = ("Too bad, you got +" + (numberOfShots - 6));
+                }
+                theCourse.appendChild(score);
+                return;
+            }
+            function ballInHole() {
+                // clear intervals
+                clearInterval(drawAimer);
+                clearInterval(shotStrength);
+                // add score message
+                endScore();
+            }
+            
+            
+            // constantly draws the aiming line until direction placed with mouseclick
+            aiming = document.getElementById("aim");
+
+            function drawAimer() {
+                game.onmousemove = function(event) {
+                    if (readyToShoot) {
+                        return;
+                    }
+                    aimX = event.clientX;
+                    aimY = event.clientY;
+                    layout = theCourse.getBoundingClientRect();
+                    aiming.setAttribute("x2", aimX-layout.left);
+                    aiming.setAttribute("y2", aimY-layout.top);
+                }
+            }
+            setInterval(drawAimer, 20);
+
+            function replay() {
+                // clear powerbar interval and reset ready to shoot state to allow redrawing of aiming line
+                readyToShoot = false;
+                //clearInterval(shotStrength);
+                setInterval(drawAimer, 20);
+                // reset shot count
+                numberOfShots = 0;
+                shotCount.textContent = ("Shots: " + numberOfShots);
+                //theCourse.removeChild(score);
+                console.log("before check")
+                console.log(theCourse.getElementsByTagName("text").length);
+    if (theCourse.getElementsByTagName("text").length == 4) {
+        console.log("after check")
+        theCourse.removeChild(score);
+    }
+                // reset ball
+                golfball.setAttribute("cx", 80);
+                golfball.setAttribute("cy", 125);
+                // reset aiming line
+                aiming.setAttribute("x1", 80);
+                aiming.setAttribute("y1", 125);
+                aiming.setAttribute("x2", 130);
+                aiming.setAttribute("y2", 125);
+                // reset power bar
+                powerIndicator.setAttribute("width", 0);
+
+            }
+
+        </script>
+    </body>
+</html>
